@@ -1,9 +1,9 @@
 const axios = require('axios');
+const fs = require('fs');
+
 const standings_url = "https://fantasy.premierleague.com/api/leagues-classic/314/standings/?page_new_entries=1&page_standings=1&phase=1";
 const master_list_url = "https://fantasy.premierleague.com/api/bootstrap-static/"
 const week = 12;
-
-const fs = require('fs');
 
 const get_top_teams = async () => {
   const top_teams = await get_data(standings_url)
@@ -21,8 +21,6 @@ const get_master_player_list = async () => {
     }, {})
 }
 
-
-
 const get_data = async (url) => {
   return await axios.get(url);
 }
@@ -38,15 +36,8 @@ const getLastWeeksDate = () => {
 
     // get top scoring teams
     const top_teams = await get_top_teams();
-    
     // get the master list of all the players
     const master_list = await get_master_player_list();
-
-
-
-    
-    // console.log({ all_player_slim })
-
 
     let selected_players = {};
 
@@ -87,12 +78,8 @@ const getLastWeeksDate = () => {
       const raw_data = await fs.promises.readFile('data.json');
       selected_players = JSON.parse(raw_data)
     }
-    
-
 
     let player_list = [];
-
-
     const keys_list =  Object.keys(selected_players)
     let sortable = [];
     for(let j = 0; j < keys_list.length; j++) {
@@ -109,26 +96,11 @@ const getLastWeeksDate = () => {
       master_list[key].num_teams = val;
       player_list.push(master_list[key])
     })
-
-
-
-
-    // console.log({ master_list })
-    // console.log({ selected_players })
     console.log({ player_list })
 
     const data = JSON.stringify(player_list, null, 2);
     await fs.promises.writeFile('top_players.json', data);
-
-
-    // top_teams.forEach(async team => {
-
-    // })
-
-
-    // console.log(top_teams);
   } catch(e) {
     console.log("error ", e)
   }
-
 })()
